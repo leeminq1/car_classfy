@@ -1,0 +1,262 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Title</title>
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap@4.5.3/dist/css/bootstrap.min.css"
+          integrity="sha384-TX8t27EcRE3e/ihU7zmQxVncDAy5uIKz4rEkgIXeMed4M0jlfIDPvg6uqKI2xXr2" crossorigin="anonymous">
+    <link rel="stylesheet" href="../static/car.css">
+    <link href="https://fonts.googleapis.com/css2?family=Jua&display=swap" rel="stylesheet">
+    <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.5.1/jquery.min.js"></script>
+    <script type="text/javascript" src="https://code.jquery.com/ui/1.12.1/jquery-ui.js"></script>
+    <script src="//code.jquery.com/jquery-1.10.2.js"></script>
+    <script src="//code.jquery.com/ui/1.11.0/jquery-ui.js"></script>
+    <script src="http://code.jquery.com/ui/1.8.17/jquery-ui .min.js "></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/jqueryui-touch-punch/0.2.3/jquery.ui.touch-punch.min.js" integrity="sha512-0bEtK0USNd96MnO4XhH8jhv3nyRF0eK87pJke6pkYf3cM0uDIhNJy9ltuzqgypoIFXw3JSuiy04tVk4AjpZdZw==" crossorigin="anonymous"></script>
+
+    <script>
+        $(document).ready(function () {
+            //    ajax 호출해서 POST 하는 것과 GET 하는 부분을 만들어야 된다.
+            data_download()
+
+            $(".sortable_list").sortable({
+                connectWith: ".sortable_list",
+                placeholder: ".moved",
+                receive: function (event, ui) {
+                    let car_number = ui.item[0].innerText.split("\n")["3"];
+                    let current_location = ui.item[0].innerText.split("\n")["1"];
+                    let new_location = this.id.split("_")[1];
+                    console.log(current_location, car_number, new_location)
+                    // alert(ui.sender[0].id + "에서" + this.id + "로 이동합니다.")
+                    $.ajax({
+                            type: 'POST',
+                            url: '/api/updata',
+                            data: {
+                                number_give: car_number,
+                                current_location_give: current_location,
+                                new_location_give: new_location
+                            },
+                            success: function (response) {
+                                if (response['result'] == 'success') {
+                                    let msg = response['msg'];
+                                    alert(msg);
+                                    window.location.reload();
+                                }
+                            }
+                        }
+                    )
+                }
+            })
+        })
+
+        function data_upload() {
+            let name = $('#car_name').val()
+            let number = $('#car_number').val()
+            let location = $('#car_location').val()
+            let car_class = $('#car_class').val()
+            let car_commnet = $('#car_commnet').val()
+
+            $.ajax({
+                type: "POST",
+                url: "/api/upload",
+                data: {
+                    name_receive: name,
+                    number_receive: number,
+                    location_receive: location,
+                    car_class_receive: car_class,
+                    car_commnet_receive: car_commnet
+                },
+                success: function (response) { // 성공하면
+                    if (response["result"] == "success") {
+                        alert(response["msg"]);
+                        window.location.reload();
+                    }
+                }
+            })
+        }
+
+
+        function data_download() {
+            $.ajax({
+                type: 'GET',
+                url: '/api/download',
+                data: {},
+                success: function (response) {
+                    if (response['result'] == 'success') {
+                        let car_list = response['msg'];
+                        for (let i = 0; i < car_list.length; i++) {
+                            let name = car_list[i]['name'];
+                            let number = car_list[i]['number'];
+                            let location = car_list[i]['location'];
+                            let car_class = car_list[i]['class'];
+                            let comment = car_list[i]['comment'];
+
+                            if (car_class == "HEV") {
+                                let temp_html = `<div onclick="change_background_color()" class="card text-white bg-primary <mb></mb>-3">
+                <li id="update_name">HEV</li>
+                <li id="update_location">${location} </li>
+                <li id="update_name">${name} </li>
+                <li id="update_number">${number} </li>
+                <li id="update_commnet">${comment}</li>
+        </div>`
+                                decision_location(temp_html, location);
+
+                            } else if (car_class == "PHEV") {
+                                let temp_html = `<div onclick="change_background_color()" class="card text-white bg-success mb-3">
+                <li id="update_name">PHEV</li>
+                <li id="update_location">${location} </li>
+                <li id="update_name">${name} </li>
+                <li id="update_number">${number} </li>
+                <li id="update_commnet">${comment}</li>
+            </div>
+        </div>`
+                                decision_location(temp_html, location);
+
+                            } else if (car_class == "EV") {
+                                let temp_html = `<div onclick="change_background_color()" class="card text-white bg-danger mb-3">
+                <li id="update_name">EV</li>
+                <li id="update_location">${location} </li>
+                <li id="update_name">${name} </li>
+                <li id="update_number">${number} </li>
+                <li id="update_commnet">${comment}</li>
+            </div>
+        </div>`
+                                decision_location(temp_html, location);
+
+                            }
+                        }
+                        //
+
+                    }
+                }
+            });
+        }
+
+
+        function decision_location(temp_html, location) {
+            if (location == "1") {
+                $("#location_1").append(temp_html)
+            } else if (location == "2") {
+                $("#location_2").append(temp_html)
+            } else if (location == "3") {
+                $("#location_3").append(temp_html)
+            } else if (location == "4") {
+                $("#location_4").append(temp_html)
+            } else if (location == "5") {
+                $("#location_5").append(temp_html)
+            } else if (location == "6") {
+                $("#location_6").append(temp_html)
+            }
+        }
+    </script>
+</head>
+<body>
+<SECTION class="main_section"> 내 차량 위치 찾기</SECTION>
+<h1>차량 DB 관리</h1>
+<SECTION class="input_area">
+    <div>
+        <div class="input-group mb-2">
+            <div class="input-group-prepend">
+                <button class="btn btn-outline-secondary" type="button">차종 구분</button>
+            </div>
+            <select class="custom-select" id="car_class" aria-label="Example select with button addon">
+                <option selected>--선택하세요--</option>
+                <option value="HEV">HEV</option>
+                <option value="PHEV">PHEV</option>
+                <option value="EV">EV</option>
+            </select>
+        </div>
+        <form>
+            <div class="form-group row">
+                <label for="car_name" class="col-sm-2 col-form-label">차량명</label>
+                <div class="col-sm-10">
+                    <input class="form-control" id="car_name">
+                </div>
+            </div>
+            <div class="form-group row">
+                <label for="car_number" class="col-sm-2 col-form-label">차량번호</label>
+                <div class="col-sm-10">
+                    <input class="form-control" id="car_number">
+                </div>
+            </div>
+            <div class="form-group row">
+                <label for="car_location" class="col-sm-2 col-form-label">위치</label>
+                <div class="col-sm-10">
+                    <input class="form-control" id="car_location">
+                </div>
+            </div>
+            <div class="form-group row">
+                <label for="car_commnet" class="col-sm-2 col-form-label">특이사항</label>
+                <div class="col-sm-10">
+                    <input class="form-control" id="car_commnet">
+                </div>
+            </div>
+            <div class="form-group row">
+                <div class="col-sm-10">
+                    <button id="button_posting" type="button" onclick="data_upload()">입력하기</button>
+                </div>
+            </div>
+        </form>
+    </div>
+    <span style="font-size:x-large"> 차량위치별 구분번호 <br> 1 : 1동 2동사이 건물근처 (로비쪽) <br> 2 : 1동 건물 근처 주차장 <br>  3 : 소뱅크 <br>  4 : 엔진조립동 <br>  5 : 기타 연구소내 <br>  6 : 연구소 외 지역 <br><br> ※ 위치는 숫자만 입력</span>
+    <!--    <div>-->
+    <!--        <div class="input-group mb-2">-->
+    <!--            <div class="input-group-prepend">-->
+    <!--                <button class="btn btn-outline-secondary" type="button">차종 구분</button>-->
+    <!--            </div>-->
+    <!--            <select class="custom-select" id="chk_class" aria-label="Example select with button addon">-->
+    <!--                <option selected>&#45;&#45;선택하세요&#45;&#45;</option>-->
+    <!--                <option value="HEV">HEV</option>-->
+    <!--                <option value="PHEV">PHEV</option>-->
+    <!--                <option value="EV">EV</option>-->
+    <!--            </select>-->
+    <!--        </div>-->
+    <!--        <form>-->
+    <!--            <div class="form-group row">-->
+    <!--                <label for="car_name" class="col-sm-2 col-form-label">차량명</label>-->
+    <!--                <div class="col-sm-10">-->
+    <!--                    <input class="form-control" id="chk_name">-->
+    <!--                </div>-->
+    <!--            </div>-->
+    <!--            <div class="form-group row">-->
+    <!--                <label for="car_number" class="col-sm-2 col-form-label">차량번호</label>-->
+    <!--                <div class="col-sm-10">-->
+    <!--                    <input class="form-control" id="chk_number">-->
+    <!--                </div>-->
+    <!--            </div>-->
+    <!--            <div class="form-group row">-->
+    <!--                <label for="car_location" class="col-sm-2 col-form-label">위치</label>-->
+    <!--                <div class="col-sm-10">-->
+    <!--                    <input class="form-control" id="chk_location">-->
+    <!--                </div>-->
+    <!--            </div>-->
+    <!--            <div class="form-group row">-->
+    <!--                <label for="car_commnet" class="col-sm-2 col-form-label">특이사항</label>-->
+    <!--                <div class="col-sm-10">-->
+    <!--                    <input class="form-control" id="chk_commnet">-->
+    <!--                </div>-->
+    <!--            </div>-->
+    <!--            <div class="form-group row">-->
+    <!--                <div class="col-sm-10">-->
+    <!--                    <button id="button_research" type="button" onclick="data_upload">조회하기</button>-->
+    <!--                </div>-->
+    <!--            </div>-->
+    <!--        </form>-->
+    <!--    </div-->
+</SECTION>
+
+</SECTION>
+<SECTION class="location_area">
+    <div id="location_1" class="sortable_list" style="border:1px solid;">location_1</div>
+    <div id="location_2" class="sortable_list" style="border:1px solid;"> location_2</div>
+    <div id="location_3" class="sortable_list" style="border:1px solid;">location_3</div>
+    <div id="location_4" class="sortable_list" style="border:1px solid;">location_4</div>
+    <div id="location_5" class="sortable_list" style="border:1px solid;"> location_5</div>
+    <div id="location_6" class="sortable_list" style="border:1px solid;"> location_6</div>
+
+</SECTION>
+
+
+</body>
+
+</html>
