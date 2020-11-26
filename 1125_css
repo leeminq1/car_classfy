@@ -3,14 +3,17 @@
 }
 
 .input_area {
-    display: grid;
-    border: 2px solid black;
+    /*display: grid;*/
+    border: 5px solid black;
     margin: 10px 20px auto 5px;
-    width: 100%;
+    width: 50%;
+    line-height: 25px;
     padding: 10px 10px 10px 10px;
-    grid-template-columns: repeat(2, 1fr);
-    grid-auto-rows: auto;
-    grid-column-gap: 50px;
+    margin: auto;
+    font-size: 1.5rem;
+    /*grid-template-columns: repeat(2, 1fr);*/
+    /*grid-auto-rows: auto;*/
+    /*grid-column-gap: 50px;*/
 }
 
 .location_area {
@@ -25,13 +28,79 @@
 }
 
 .sortable_list {
-    display: grid;
-    grid-template-columns: repeat(4, minmax(20px, auto));
-    grid-auto-rows: minmax(200px, auto);
-    grid-gap: 10px;
+    /*display: grid;*/
+    /*grid-template-columns: repeat(4, minmax(20px, auto));*/
+    /*grid-auto-rows: minmax(200px, auto);*/
+    /*grid-gap: 10px;*/
+    height: 50rem;
+    width: 100%;
+
+    text-align: center;
+    font-size: 3rem;
 }
 
 .selected {
     background: red
+}
+
+#topMenu {
+    height: 200px;
+    width: 2000px;
+    margin: auto;
+}
+
+#topMenu > ul > li {
+    list-style: none;
+    color: white;
+    background-color: #2d2d2d;
+    float: left;
+    line-height: 100px;
+    vertical-align: middle;
+    text-align: center;
+}
+
+#topMenu .menuLink {
+    text-decoration: none;
+    color: white;
+    display: block;
+    width: 300px;
+    font-size: 50px;
+    font-weight: bold;
+    font-family: "Trebuchet MS", Dotum, Arial;
+}
+
+#topMenu .menuLink:hover {
+    color: red;
+    background-color: #4d4d4d;
+
+}
+
+.main_section {
+    font-size: 10rem;
+    text-align: center;
+}
+
+.custom-select {
+    display: inline-block;
+    width: 78%;
+    height: calc(1.5em + .75rem + 2px);
+    padding: .375rem 1.75rem .375rem .75rem;
+    margin-left: 1rem;
+    font-size: 1rem;
+    font-weight: 400;
+    line-height: 1.5;
+    color: #495057;
+    vertical-align: middle;
+    background: #fff url(data:image/svg+xml,%3csvg xmlns= 'http://www.w3.org/2000/svg' width= '4' height= '5' viewBox= '0 0 4 5' %3e%3cpath fill= '%23343a40' d= 'M2 0L0 2h4zm0 5L0 3h4z' /%3e%3c/svg%3e) no-repeat right .75 rem center / 8 px 10 px;
+    border: 1px solid #ced4da;
+    border-radius: .25rem;
+    -webkit-appearance: none;
+    -moz-appearance: none;
+    appearance: none;
+}
+
+.form-control {
+    height: 4rem;
+
 }
 
