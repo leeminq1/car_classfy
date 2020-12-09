@@ -1,0 +1,42 @@
+import sys
+import csv
+from pymongo import MongoClient
+
+MONGO_HOST = 'localhost'
+MONGO_PORT = 27017
+
+DOCUMENT_NAME = 'test'
+COLLECTION_NAME = 'service'
+
+FILENAME = 'services.csv'
+COLUMNS = ('제목', '지원내용', '서비스 목적', '시행일자', '종료일자', '소관기관', '소관기관 연락처', '관심분야', '지원형태', '지원대상', '수급자격', '선정기준', '중복불가 서비스', '신청필요여부', '온라인신청가능여부', '처리기한', '신청절차', '구비서류', '신청기한', '접수기관', '접수기관 연락처', '처리기관', '처리기관 연락처', '문의처', '문의전화번호', '웹사이트')
+
+def connect_mongo():
+    try:
+        client = MongoClient(MONGO_HOST, MONGO_PORT)
+        db = client[DOCUMENT_NAME]
+        return  db[COLLECTION_NAME]
+    except Exception as e:
+        print('Got an error!')
+        print(e)
+        sys.exit(1)
+
+def read_csv():
+    reader = open(FILENAME, 'r')
+    return csv.DictReader(reader, COLUMNS)    
+    
+def save_to_mongo():
+    collection = connect_mongo()
+    data = read_csv()
+    
+    try:
+        result = collection.insert_many(data)
+        print('%d rows are saved to "%s" collection in "%s" document successfully!' % (len(result.inserted_ids), COLLECTION_NAME, DOCUMENT_NAME))
+        sys.exit(1)
+    except Exception as e:
+        print('Got an error!')
+        print(e)
+        sys.exit(1)
+
+if __name__ == '__main__':
+    save_to_mongo()
