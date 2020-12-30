@@ -1,0 +1,371 @@
+<!DOCTYPE html>
+<html lang="en">
+<head oncontextmenu="return false" ondragstart="return false" onselect="return false">
+    <meta charset="UTF-8">
+    <title>Title</title>
+    <script src="//code.jquery.com/jquery-1.10.2.js"></script>
+    <script src="//code.jquery.com/ui/1.11.0/jquery-ui.js"></script>
+
+    <link rel="stylesheet" href="../static/index5.css">
+
+    <link href="https://fonts.googleapis.com/css2?family=Jua&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap@4.5.3/dist/css/bootstrap.min.css"
+          integrity="sha384-TX8t27EcRE3e/ihU7zmQxVncDAy5uIKz4rEkgIXeMed4M0jlfIDPvg6uqKI2xXr2" crossorigin="anonymous">
+    <meta name="viewport"
+          content="width=device-width, maximum-scale=1.0, minimum-scale=1, user-scalable=yes,initial-scale=1.0"/>
+    <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.5.1/jquery.min.js"></script>
+    <script type="text/javascript" src="https://code.jquery.com/ui/1.12.1/jquery-ui.js"></script>
+
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/jqueryui-touch-punch/0.2.3/jquery.ui.touch-punch.min.js"
+            integrity="sha512-0bEtK0USNd96MnO4XhH8jhv3nyRF0eK87pJke6pkYf3cM0uDIhNJy9ltuzqgypoIFXw3JSuiy04tVk4AjpZdZw=="
+            crossorigin="anonymous"></script>
+
+    <!-- Bulma CSS -->
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bulma@0.9.1/css/bulma.min.css">
+
+
+    <!-- Font Awesome CSS -->
+    <link href="//maxcdn.bootstrapcdn.com/font-awesome/4.7.0/css/font-awesome.min.css" rel="stylesheet">
+
+
+    <script>
+        let user_id = '{{ user_info.username}}';
+
+
+        $(document).ready(function () {
+
+            //    ajax 호출해서 POST 하는 것과 GET 하는 부분을 만들어야 된다.
+            data_download()
+
+            $(".area_list").sortable({
+                connectWith: ".area_list",
+                placeholder: ".moved",
+                receive: function (event, ui) {
+
+
+                    let car_number = ui.item[0].innerText.split("\n")["1"];
+                    // let current_location = ui.item[0].innerText.split("\n")["1"];
+                    let new_location = this.id.split("_")[1];
+                    // console.log(car_number,current_location,new_location)
+                    // console.log(current_location, car_number, new_location)
+                    // alert(ui.sender[0].id + "에서" + this.id + "로 이동합니다.")
+                    let userid = user_id;
+
+
+                    console.log(car_number, new_location, user_id)
+                    $.ajax({
+                            type: 'POST',
+                            url: '/api/updata',
+                            data: {
+                                number_give: car_number,
+                                // current_location_give: current_location,
+                                new_location_give: new_location,
+                                user_id_give: userid
+                            },
+                            success: function (response) {
+                                if (response['result'] == 'success') {
+                                    let msg = response['msg'];
+                                    // alert(msg);
+                                    window.location.reload();
+                                }
+                            }
+                        }
+                    )
+                }
+            })
+
+
+        })
+
+
+
+
+        function data_upload() {
+            let name = $('#car_name').val()
+            let number = $('#car_number').val()
+            let location = $('#car_location').val()
+            let car_class = $('#car_class').val()
+            let car_commnet = $('#car_commnet').val()
+
+            $.ajax({
+                type: "POST",
+                url: "/api/upload",
+                data: {
+                    name_receive: name,
+                    number_receive: number,
+                    location_receive: location,
+                    car_class_receive: car_class,
+                    car_commnet_receive: car_commnet
+                },
+                success: function (response) { // 성공하면
+                    if (response["result"] == "success") {
+                        alert(response["msg"]);
+                        window.location.reload();
+                    }
+                }
+            })
+        }
+
+        function car_find() {
+            let car_number = $('#search_car_input').val()
+            console.log(car_number)
+            $.ajax({
+                type: "POST",
+                url: "/api/carfind",
+                data: {
+                    number_receive: car_number,
+                },
+                success: function (response) { // 성공하면
+                    if (response["result"] == "success") {
+                        alert(response["msg"]);
+                        // window.location.reload();
+                    }
+                    // else
+                    //  { alert("등록되지 않은 관리번호입니다."); }
+                }
+            })
+
+
+        }
+
+
+        function data_download() {
+            $.ajax({
+                type: 'GET',
+                url: '/api/download',
+                data: {},
+                success: function (response) {
+                    if (response['result'] == 'success') {
+                        let car_list = response['msg'];
+                        console.log(car_list.length)
+                        for (let i = 0; i < car_list.length; i++) {
+                            let name = car_list[i]['name'];
+                            let number = car_list[i]['number'];
+                            let location = car_list[i]['location'];
+                            let car_class = car_list[i]['class'];
+                            let comment = car_list[i]['comment'];
+                            let location_number = car_list[i]['location_number'];
+
+                            if (car_class == "HEV") {
+                                let temp_html =
+                                    `<div class="car_object_tag">
+                                    <img class="card_object_img" src="../static/index/car_hev.png"  style="max-width:100px; max-height: 100px;  border-radius: 30%;">
+                                   <div class="card_object">
+                                   ${name}<br>
+                                    ${number}
+                                    </div>
+                                      </div>`
+
+                                decision_location(temp_html, location_number);
+                            } else if (car_class == "PHEV") {
+                                let temp_html =
+                                    `<div class="car_object_tag">
+                                    <img class="card_object_img" src="../static/index/car_phev.png" style="max-width:100px; max-height: 100px; border-radius: 30%;">
+                                   <div class="card_object">
+                                   ${name}<br>
+                                    ${number}
+                                    </div>
+                                      </a href="#">`
+
+                                decision_location(temp_html, location_number);
+                            } else if (car_class == "EV") {
+                                let temp_html =
+                                    `<div class="car_object_tag">
+                                    <img class="card_object_img" src="../static/index/car_ev.png" style="max-width:100px; max-height: 100px;border-radius: 30%;">
+                                   <div class="card_object">
+                                   ${name}<br>
+                                    ${number}
+                                    </div>
+                                      </div>`
+
+                                decision_location(temp_html, location_number);
+                            } else if (car_class == "가솔린") {
+                                let temp_html =
+                                    `<div class="car_object_tag">
+                                    <img class="card_object_img" src="../static/index/car_gasoline.png" style="max-width:100px; max-height: 100px;border-radius: 30%;">
+                                   <div class="card_object">
+                                   ${name}<br>
+                                    ${number}
+                                    </div>
+                                      </div>`
+
+                                decision_location(temp_html, location_number);
+                            }
+
+
+                        }
+                        //
+
+                    }
+                }
+            });
+        }
+
+        function decision_location(temp_html, location_number) {
+            if (location_number == "1") {
+                $("#location_1").append(temp_html)
+                $("#location1").append(temp_html)
+            } else if (location_number == "2") {
+                $("#location_2").append(temp_html)
+                $("#location2").append(temp_html)
+            } else if (location_number == "3") {
+                $("#location_3").append(temp_html)
+                $("#location3").append(temp_html)
+            } else if (location_number == "4") {
+                $("#location_4").append(temp_html)
+                $("#location4").append(temp_html)
+            } else if (location_number == "5") {
+                $("#location_5").append(temp_html)
+                $("#location5").append(temp_html)
+            } else if (location_number == "6") {
+                $("#location_6").append(temp_html)
+                $("#location6").append(temp_html)
+            } else if (location_number == "7") {
+                $("#location_7").append(temp_html)
+                $("#location7").append(temp_html)
+            } else if (location_number == "8") {
+                $("#location_8").append(temp_html)
+                $("#location8").append(temp_html)
+            }
+        }
+
+
+    </script>
+</head>
+<body oncontextmenu="return false" ondragstart="return false" onselect="return false">
+
+<div class="main_section">
+    <img id="main_left" src="../static/index/main_left.png" align="left">
+    <div class="title_name" align="center">
+        <p id="main_title">차량 위치찾기</p>
+        <p id="page_title">위치 정보</p>
+    </div>
+    <img id="main_right" src="../static/index/main_right1.png" align="right">
+</div>
+
+<div id="search_section">
+    <input id="search_car_input" type="search" placeholder="검색 EX)N18/12-212 -> 1812212"
+           aria-label="Search" onkeypress="if(event.keyCode==13) {car_find(); return false;}">
+    <button id="search_car_btn" type="submit" onclick="car_find()">Search</button>
+</div>
+
+<div class="location_area">
+    <div class="location_area_section">
+        <p class="handdle_name"><img onclick=$("#modal-post1").addClass("is-active"); width="30px;" height="30px;"
+                                     class="handdle_img"
+                                     src="../static/index/handdle.png">로비근처</p>
+        <div id="location_1" class="area_list"></div>
+    </div>
+    <div class="location_area_section">
+        <p class="handdle_name"><img onclick=$("#modal-post2").addClass("is-active"); width="30px;" height="30px;" class="handdle_img"
+                                     src="../static/index/handdle.png">신규주차장</p>
+        <div id="location_2" class="area_list"></div>
+    </div>
+    <div class="location_area_section">
+        <p class="handdle_name"><img onclick=$("#modal-post3").addClass("is-active"); width="30px;" height="30px;" class="handdle_img"
+                                     src="../static/index/handdle.png">제동시험동</p>
+        <div id="location_3" class="area_list"></div>
+    </div>
+    <div class="location_area_section">
+        <p class="handdle_name"><img onclick=$("#modal-post4").addClass("is-active"); width="30px;" height="30px;" class="handdle_img"
+                                     src="../static/index/handdle.png">소뱅크</p>
+        <div id="location_4" class="area_list"></div>
+    </div>
+    <div class="location_area_section">
+        <p class="handdle_name"><img onclick=$("#modal-post5").addClass("is-active"); width="30px;" height="30px;" class="handdle_img"
+                                     src="../static/index/handdle.png">엔진조립동</p>
+        <div id="location_5" class="area_list"></div>
+    </div>
+    <div class="location_area_section">
+        <p class="handdle_name"><img onclick=$("#modal-post6").addClass("is-active"); width="30px;" height="30px;" class="handdle_img"
+                                     src="../static/index/handdle.png">PG</p>
+        <div id="location_6" class="area_list"></div>
+    </div>
+    <div class="location_area_section">
+        <p class="handdle_name"><img onclick=$("#modal-post7").addClass("is-active"); width="30px;" height="30px;" class="handdle_img"
+                                     src="../static/index/handdle.png">기타연구소내</p>
+        <div id="location_7" class="area_list"></div>
+    </div>
+    <div class="location_area_section">
+        <p class="handdle_name"><img onclick=$("#modal-post8").addClass("is-active"); width="30px;" height="30px;" class="handdle_img"
+                                     src="../static/index/handdle.png">연구소외</p>
+        <div id="location_8" class="area_list"></div>
+    </div>
+</div>
+<div class="modal" id="modal-post1">
+    <div class="modal-background" onclick='$("#modal-post1").removeClass("is-active")'></div>
+    <div class="modal-content">
+        <div id="location1" class="area_list_modal area_list media-content"></div>
+    </div>
+    <button class="modal-close is-large" aria-label="close"
+            onclick='$("#modal-post1").removeClass("is-active")'></button>
+</div>
+<div class="modal" id="modal-post2">
+    <div class="modal-background" onclick='$("#modal-post2").removeClass("is-active")'></div>
+    <div class="modal-content">
+        <div id="location2" class="area_list_modal area_list media-content"></div>
+    </div>
+    <button class="modal-close is-large" aria-label="close"
+            onclick='$("#modal-post2").removeClass("is-active")'></button>
+</div>
+<div class="modal" id="modal-post3">
+    <div class="modal-background" onclick='$("#modal-post3").removeClass("is-active")'></div>
+    <div class="modal-content">
+        <div id="location3" class="area_list media-content"></div>
+    </div>
+    <button class="modal-close is-large" aria-label="close"
+            onclick='$("#modal-post3").removeClass("is-active")'></button>
+</div>
+<div class="modal" id="modal-post4">
+    <div class="modal-background" onclick='$("#modal-post4").removeClass("is-active")'></div>
+    <div class="modal-content">
+        <div id="location4" class="area_list media-content"></div>
+    </div>
+    <button class="modal-close is-large" aria-label="close"
+            onclick='$("#modal-post4").removeClass("is-active")'></button>
+</div>
+<div class="modal" id="modal-post5">
+    <div class="modal-background" onclick='$("#modal-post5").removeClass("is-active")'></div>
+    <div class="modal-content">
+        <div id="location5" class="area_list media-content"></div>
+    </div>
+    <button class="modal-close is-large" aria-label="close"
+            onclick='$("#modal-post5").removeClass("is-active")'></button>
+</div>
+<div class="modal" id="modal-post6">
+    <div class="modal-background" onclick='$("#modal-post6").removeClass("is-active")'></div>
+    <div class="modal-content">
+        <div id="location6" class="area_list media-content"></div>
+    </div>
+    <button class="modal-close is-large" aria-label="close"
+            onclick='$("#modal-post6").removeClass("is-active")'></button>
+</div>
+<div class="modal" id="modal-post7">
+    <div class="modal-background" onclick='$("#modal-post7").removeClass("is-active")'></div>
+    <div class="modal-content">
+        <div id="location7" class="area_list media-content"></div>
+    </div>
+    <button class="modal-close is-large" aria-label="close"
+            onclick='$("#modal-post7").removeClass("is-active")'></button>
+</div>
+<div class="modal" id="modal-post8">
+    <div class="modal-background" onclick='$("#modal-post8").removeClass("is-active")'></div>
+    <div class="modal-content">
+        <div id="location8" class="area_list media-content"></div>
+    </div>
+    <button class="modal-close is-large" aria-label="close"
+            onclick='$("#modal-post8").removeClass("is-active")'></button>
+</div>
+
+<div class="bottom_section">
+    <a href="/location"><img width="156px;" height="173px;" id="bottom_left" src="../static/index/bottom_left.png"
+                             align="left"></a>
+    <a href="/register"><img width="156px;" height="173px;" id="bottom_middle" src="../static/index/bottom_middle.png"
+                             align="center"></a>
+    <a href="/list/{{ user_info.username }}"><img width="156px;" height="173px;" id="bottom_right" src="../static/index/bottom_right.png"
+                             align="right"></a>
+</div>
+
+</body>
+
+</html>

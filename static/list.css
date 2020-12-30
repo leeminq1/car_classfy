@@ -1,0 +1,270 @@
+/* main 위에 */
+.main_section {
+    background-color: #00285E;
+    color: white;
+    height: 150px;
+}
+
+#main_left {
+    width: 156px;
+    height: 137px;
+    /*margin: 0 0 0 325px;*/
+    opacity: 0.87;
+}
+
+
+.title_name {
+    width: 50%;
+    line-height: 70px;
+    text-align: center;
+    font-size: 50px;
+    margin-right: auto;
+    margin-left: 13%;
+    float: left;
+}
+
+#main_title {
+    font-size: 60px;
+    margin-bottom: 0rem;
+
+}
+
+#page_title {
+    opacity: 0.6;
+    position: relative;
+    margin-bottom: 0rem;
+}
+
+
+/* user inform*/
+.user_inform {
+    margin-left: auto;
+    margin-right: auto;
+    width: fit-content;
+
+}
+
+
+/* bottom 아래*/
+
+.bottom_section {
+    text-align: center;
+    background-color: #00285E;
+    color: white;
+    height: 90px;
+    padding-top: 10px;
+    padding-left: 20px;
+    padding-right: 20px;
+    position: fixed;
+    bottom: 0vh;
+    width: 100%;
+
+
+}
+
+/*user inform*/
+.area_list {
+    min-height: 20rem;
+    padding-bottom: 50px;
+    background-color: #EFEFEF;
+    border-radius: 20px;
+    text-align: center;
+    overflow: auto;
+    margin-top: 60px;
+}
+
+.user_inform {
+    font-size: 2rem;
+}
+
+
+/*차량 붙이는 부분*/
+
+.car_object_tag {
+    position: relative;
+    margin: 40px 20px 20px 20px;
+    display: inline-block;
+    max-width: 200px;
+}
+
+.card_object {
+    max-width: 80px;
+    max-height: 80px;
+    width: fit-content;
+    overflow: hidden;
+    top: 100%;
+    left: 50%;
+    transform: translate(-50%, -50%);
+    font-weight: bold;
+    position: absolute;
+    background-color: #474747;
+    color: white;
+    font-size: 0.3rem;
+    text-align: center;
+}
+
+.area_list {
+
+    max-height: 20rem;
+    background-color: #EFEFEF;
+    border-radius: 20px;
+    text-align: center;
+    overflow: auto;
+}
+
+
+/*main section media query*/
+@media screen and (max-width: 1200px) {
+    .main_section {
+        height: 55px;
+        background-color: #00285E;
+        color: white;
+    }
+
+    #main_left {
+        width: 60px;
+        height: 55px;
+        /*margin: 7px 317px 1px 0;*/
+        opacity: 0.87;
+    }
+
+    .title_name {
+        width: 50%;
+        line-height: 5px;
+        margin-right: auto;
+        margin-left: 10%;
+        margin-top: 21px;
+    }
+
+    #main_title {
+        font-size: 20px;
+        margin-bottom: 1rem;
+    }
+
+    #page_title {
+        font-size: 14px;
+        opacity: 0.6;
+    }
+
+    #main_right {
+        width: 30px;
+        height: 30px;
+        /*margin: 0 0 0 325px;*/
+        opacity: 0.87;
+        margin-top: 14px;
+        margin-right: 10px;
+
+    }
+
+}
+
+
+/*middle section media query*/
+@media screen and (max-width: 1200px) {
+
+    .user_inform {
+        font-size: 1rem;
+    }
+
+    .area_list {
+        min-height: 20rem;
+        padding-bottom: 10px;
+        background-color: #EFEFEF;
+        border-radius: 5px;
+        text-align: center;
+        padding-top: 1px;
+        overflow-y: scroll;
+        margin-top: 30px;
+    }
+
+
+    .area_list::-webkit-scrollbar {
+        width: 10px;
+    }
+
+    .area_list::-webkit-scrollbar-thumb {
+        background-color: #00285E;
+        border-radius: 10px;
+        background-clip: padding-box;
+        border: 2px solid transparent;
+    }
+
+    .area_list::-webkit-scrollbar-track {
+        background-color: grey;
+        border-radius: 10px;
+        box-shadow: inset 0px 0px 5px white;
+    }
+
+    .car_object_tag {
+        position: relative;
+        margin: 10px 20px 10px 20px;
+        display: inline-block;
+        max-width: 200px;
+    }
+    .card_object_img{
+        width: 50px;
+        height: 50px;
+
+    }
+
+    .card_object {
+        width: 70px;
+        overflow: hidden;
+        top: 100%;
+        left: 50%;
+        transform: translate(-50%, -50%);
+        font-weight: bold;
+        position: absolute;
+        background-color: #474747;
+        color: white;
+        font-size: 10px;
+        text-align: center;
+    }
+
+}
+
+/*bottom section media query*/
+@media screen and (max-width: 1200px) {
+    .bottom_section {
+        height: 60px;
+        text-align: center;
+        background-color: #00285E;
+        color: white;
+        position: fixed;
+        bottom: 0vh;
+        width: 100%;
+        /*margin-top: 50px;*/
+    }
+
+    #bottom_left {
+        width: 38px;
+        height: 38px;
+        /*margin: 7px 317px 1px 0;*/
+        opacity: 0.87;
+        margin-top: 5px;
+        margin-left: 3px;
+    }
+
+    #bottom_middle {
+        width: 38px;
+        height: 38px;
+        /*margin: 7px 317px 1px 0;*/
+        opacity: 0.87;
+        margin-top: 5px;
+    }
+
+    #bottom_right {
+        width: 55px;
+        height: 38px;
+        /*margin: 7px 317px 1px 0;*/
+        opacity: 0.87;
+        margin-top: 5px;
+        margin-right: 0px;
+
+    }
+
+}
+
+
+
+

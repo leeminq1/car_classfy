@@ -1,0 +1,569 @@
+<!DOCTYPE html>
+<html lang="en">
+<head oncontextmenu="return false" ondragstart="return false" onselect="return false">
+    <meta charset="UTF-8">
+    <title>Title</title>
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap@4.5.3/dist/css/bootstrap.min.css"
+          integrity="sha384-TX8t27EcRE3e/ihU7zmQxVncDAy5uIKz4rEkgIXeMed4M0jlfIDPvg6uqKI2xXr2" crossorigin="anonymous">
+    <link rel="stylesheet" href="../static/register.css">
+    <link href="https://fonts.googleapis.com/css2?family=Jua&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bulma@0.9.1/css/bulma.min.css">
+    <meta name="viewport"
+          content="width=device-width, maximum-scale=1.0, minimum-scale=1, user-scalable=yes,initial-scale=1.0"/>
+    <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.5.1/jquery.min.js"></script>
+    <script type="text/javascript" src="https://code.jquery.com/ui/1.12.1/jquery-ui.js"></script>
+    <script src="//code.jquery.com/jquery-1.10.2.js"></script>
+    <script src="//code.jquery.com/ui/1.11.0/jquery-ui.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/jqueryui-touch-punch/0.2.3/jquery.ui.touch-punch.min.js"
+            integrity="sha512-0bEtK0USNd96MnO4XhH8jhv3nyRF0eK87pJke6pkYf3cM0uDIhNJy9ltuzqgypoIFXw3JSuiy04tVk4AjpZdZw=="
+            crossorigin="anonymous"></script>
+
+
+</head>
+<script>
+    $(document).ready(function () {
+        //    ajax 호출해서 POST 하는 것과 GET 하는 부분을 만들어야 된다.
+        list_download()
+
+
+    })
+
+    function list_download() {
+        $.ajax({
+            type: 'GET',
+            url: '/api/list',
+            data: {},
+            success: function (response) {
+                if (response['result'] == 'success') {
+                    let car_list = response['msg'];
+                    car_attach(car_list)
+
+                }
+            }
+        })
+    }
+
+
+    function car_attach(car_list) {
+        for (let i = 0; i < car_list.length; i++) {
+            let no = i + 1;
+            let name = car_list[i]['name'];
+            let number = car_list[i]['number'];
+            let location = car_list[i]['location'];
+            let car_class = car_list[i]['class'];
+            if (car_list[i]['comment']) {
+                var comment = car_list[i]['comment'];
+            } else {
+                var comment = '-'
+            }
+            if (car_list[i]['last_user']) {
+                var last_user = car_list[i]['last_user'];
+            } else {
+                var last_user = '-'
+            }
+            if (car_list[i]['car_temp_number']) {
+                var car_temp_number = car_list[i]['car_temp_number'];
+            } else {
+                var car_temp_number = '-'
+            }
+            {#let temp_number_end = car_list[i]['temp_number_end'];#}
+
+
+            temp_html = ` <tr >
+                                            <td>${no}</td>
+                                            <td><a class="car_object" href="#" onclick="spec_clk()">${number}</a></td>
+                                            <td>${name}</td>
+                                            <td>${car_class}</td>
+                                            <td>${location}</td>
+                                            <td>${last_user}</td>
+                                            <td>${car_temp_number}</td>
+                                        </tr>`
+            $('#list-box').append(temp_html)
+
+        }
+    }
+
+
+    function spec_clk() {
+        $('.car_object').one("click", function (event) {
+            var car_info = $.trim($(this).text().replace(/ /g, ''));
+            {#var car_number = car_info.split("\n")[0];#}
+            console.log(car_info)
+            $("#modal-post1").addClass("is-active");
+            $.ajax({
+                type: 'GET',
+                url: `/api/modallist?number_give=${car_info}`,
+                data: {},
+                success: function (response) {
+                    if (response['result'] == 'success') {
+                        let car_list = response['msg'][0];
+                        {#차종#}
+                        $('#list_name').val(car_list["name"])
+                        {#관리번호#}
+                        $('#list_number').val(car_list["number"])
+                        {#담당자#}
+                        $('#list_car_admin').val(car_list["car_admin"])
+                        {#지역#}
+                        $('#list_car_region').val(car_list["car_region"])
+                        {#임판여부#}
+                        $('#list_car_temp_select').val(car_list["car_temp_select"])
+                        {#임시번호#}
+                        $('#list_car_temp_number').val(car_list["car_temp_number"])
+                        {#임시번호시작일#}
+                        $('#list_temp_number_start').val(car_list["temp_number_start"])
+                        {#임시번호종료일#}
+                        $('#list_temp_number_end').val(car_list["temp_number_end"])
+                        {#상세정보#}
+                        {#                        $('#list_specific_caruse').val(car_list["specific_caruse"])#}
+                        {#특이사항#}
+                        $('#list_comment').val(car_list["comment"])
+
+
+                    } else if (response["result"] == "fail") {
+                        alert(response["msg"])
+                    }
+                }
+            });
+
+
+        })
+    }
+
+    function modal_update() {
+        {#차종이름#}
+        let new_modal_list_name = $('#list_name').val()
+        {#관리번호#}
+        let new_modal_list_number = $('#list_number').val()
+        {#담당자#}
+        let new_modal_list_car_admin = $('#list_car_admin').val()
+        {#지역#}
+        let new_modal_list_car_region = $('#list_car_region').val()
+        {#임판여부#}
+        let new_modal_list_car_temp_select = $('#list_car_temp_select').val()
+        {#임시번호#}
+        let new_modal_list_car_temp_number = $('#list_car_temp_number').val()
+        {#임시번호시작일#}
+        let new_modal_list_temp_number_start = $('#list_temp_number_start').val()
+        {#임시번호종료일#}
+        let new_modal_list_temp_number_end = $('#list_temp_number_end').val()
+        {#특이사항#}
+        let new_modal_list_comment = $('#list_comment').val()
+
+        $.ajax({
+            type: "POST",
+            url: "/api/modalupdate",
+            data: {
+                name_receive: new_modal_list_name,
+                number_receive: new_modal_list_number,
+                car_admin_receive: new_modal_list_car_admin,
+                car_region_receive: new_modal_list_car_region,
+                car_temp_select_receive: new_modal_list_car_temp_select,
+                car_temp_number_receive: new_modal_list_car_temp_number,
+                temp_number_start_receive: new_modal_list_temp_number_start,
+                temp_number_end_receive: new_modal_list_temp_number_end,
+                comment_receive:new_modal_list_comment
+            },
+            success: function (response) { // 성공하면
+                if (response["result"] == "success") {
+                    alert(response["msg"]);
+                    window.location.reload();
+                }
+            }
+        })
+
+
+    }
+
+    function modal_delete(){
+        let new_modal_list_number = $('#list_number').val()
+        $.ajax({
+            type: "POST",
+            url: "/api/modaldelete",
+            data: {
+                number_receive: new_modal_list_number,
+            },
+            success: function (response) { // 성공하면
+                if (response["result"] == "success") {
+                    alert(response["msg"]);
+                    window.location.reload();
+                }
+            }
+        })
+
+
+    }
+
+    function find_carlocationlist() {
+        let serarch_option = $('#serarch_option').val()
+        if (serarch_option == "차종") {
+            let name = $('#search_car_input').val()
+            console.log(name)
+            $.ajax({
+                type: "POST",
+                url: "/api/findlocationlist",
+                data: {
+                    name_receive: name,
+                    serarch_option_receive: '1'
+                },
+                success: function (response) { // 성공하면
+                    if (response["result"] == "success") {
+                        console.log(response["msg"]);
+                        $('#list-box').empty()
+                        let car_list = response['msg'];
+                        car_attach(car_list)
+                    } else if (response["result"] == "fail") {
+                        alert(response["msg"])
+                    }
+                }
+            })
+
+
+        } else if (serarch_option == "관리번호") {
+            let car_number = $('#search_car_input').val()
+            console.log(car_number)
+            $.ajax({
+                type: "POST",
+                url: "/api/findlocationlist",
+                data: {
+                    number_receive: car_number,
+                    serarch_option_receive: '2'
+                },
+                success: function (response) { // 성공하면
+                    if (response["result"] == "success") {
+                        console.log(response["msg"]);
+                        $('#list-box').empty()
+                        let car_list = response['msg'];
+                        car_attach(car_list)
+
+                    } else {
+                        alert(response["msg"])
+                    }
+
+                }
+            })
+
+        } else if (serarch_option == "임시번호") {
+            let real_number = $('#search_car_input').val()
+            console.log(real_number)
+            $.ajax({
+                type: "POST",
+                url: "/api/findlocationlist",
+                data: {
+                    real_number_receive: real_number,
+                    serarch_option_receive: '3'
+                },
+                success: function (response) { // 성공하면
+                    if (response["result"] == "success") {
+                        console.log(response["msg"]);
+
+                        $('#list-box').empty()
+                        let car_list = response['msg'];
+                        car_attach(car_list)
+                    } else {
+                        alert(response["msg"])
+                    }
+                }
+            })
+
+        } else if (serarch_option == "임시번호만") {
+            $.ajax({
+                type: "POST",
+                url: "/api/findlocationlist",
+                data: {
+                    serarch_option_receive: '4'
+                },
+                success: function (response) { // 성공하면
+                    if (response["result"] == "success") {
+                        console.log(response["msg"]);
+                        $('#list-box').empty()
+                        let car_list = response['msg'];
+                        car_attach(car_list)
+
+                    } else {
+                        alert(response["msg"])
+                    }
+
+                }
+            })
+
+        }
+
+
+    }
+
+
+    function data_upload() {
+        {#차종#}
+        let name = $('#car_name').val()
+        {#관리번호#}
+        let number = $('#car_number').val()
+        {#위치#}
+        let location = $('#car_location').val()
+        {#hev 구분#}
+        let car_class = $('#car_class').val()
+        {#특이사항#}
+        let car_commnet = $('#car_commnet').val()
+        {# 담당자#}
+        let car_admin = $('#car_admin').val();
+        {# 지역#}
+        let car_region = $('#car_region').val();
+        {# 임시번호 구분#}
+        let car_temp_select = $('#car_temp_select').val();
+        {# 임시번호#}
+        let car_temp_number = $('#car_temp_number').val();
+        {# 임시번호 시작일#}
+        let temp_number_start = $('#temp_number_start').val();
+        {# 임시번호 종료일#}
+        let temp_number_end = $('#temp_number_end').val();
+
+
+        console.log(name, number, location, car_class, car_commnet, car_admin, car_region, car_temp_select, car_temp_number, temp_number_start, temp_number_end)
+
+        $.ajax({
+            type: "POST",
+            url: "/api/upload",
+            data: {
+                name_receive: name,
+                number_receive: number,
+                location_receive: location,
+                car_class_receive: car_class,
+                car_commnet_receive: car_commnet,
+                car_admin_receive: car_admin,
+                car_region_receive: car_region,
+                car_temp_select_receive: car_temp_select,
+                car_temp_number_receive: car_temp_number,
+                temp_number_start_receive: temp_number_start,
+                temp_number_end_receive: temp_number_end
+            },
+            success: function (response) { // 성공하면
+                if (response["result"] == "success") {
+                    alert(response["msg"]);
+                    window.location.reload();
+                }
+            }
+        })
+    }
+
+
+    function toggle_sign_up() {
+        $("#register_wrapper").toggleClass("is-hidden")
+        $("#table_list").toggleClass("is-hidden")
+    }
+
+
+</script>
+
+<body oncontextmenu="return false" ondragstart="return false" onselect="return false">
+<div class="main_section">
+    <img id="main_left" src="../static/register/main_left.png" align="left">
+    <div class="title_name">
+        <p id="main_title">차량 위치찾기</p>
+        <p id="page_title">차량 등록 및 검색</p>
+    </div>
+</div>
+<div id="search_section">
+    <button id="serach_choose" class="button is-info is-light" onclick="toggle_sign_up()">차량등록 or 검색</button>
+
+    <select id="serarch_option">
+        <option value="차종">차종</option>
+        <option value="관리번호">관리번호</option>
+        <option value="임시번호">임시번호</option>
+        <option value="임시번호만">임시번호만</option>
+    </select>
+
+    <input id="search_car_input" type="search" placeholder=""
+           aria-label="Search" onkeypress="if(event.keyCode==13) {find_carlocationlist(); return false;}">
+    <button id="search_car_btn" type="submit" onclick="find_carlocationlist()">Search</button>
+</div>
+
+
+<div class="input_wrapper is-hidden" id="register_wrapper">
+    <form>
+        <div class="form-group">
+            <div for="car_class" class="form_title">차종구분</div>
+            <select class="custom-select" id="car_class" aria-label="Example select with button addon">
+                <option selected>--선택하세요--</option>
+                <option value="HEV">HEV</option>
+                <option value="PHEV">PHEV</option>
+                <option value="EV">EV</option>
+                <option value="가솔린">가솔린</option>
+            </select>
+        </div>
+        <div class="form-group">
+            <div for="car_commnet" class="form_title">차량위치</div>
+            <select class="custom-select" id="car_location" aria-label="Example select with button addon">
+                <option selected>--선택하세요--</option>
+                <option value="1">로비근처</option>
+                <option value="2">신규주차장</option>
+                <option value="3">제동시험동</option>
+                <option value="4">소뱅크</option>
+                <option value="5">엔진조립동</option>
+                <option value="6">PG</option>
+                <option value="7">기타연구소내</option>
+                <option value="8">연구소외</option>
+            </select>
+        </div>
+        <div class="form-group">
+            <div for="car_name" class="form_title">차량명</div>
+            <input class="form-control" id="car_name">
+        </div>
+        <div class="form-group">
+            <div for="car_number" id="label_carnumber" class="form_title">관리번호</div>
+            <input class="form-control" id="car_number">
+        </div>
+        <div class="form-group">
+            <div for="car_admin" id="label_caradmin" class="form_title">담당자</div>
+            <input class="form-control" id="car_admin">
+        </div>
+        <div class="form-group">
+            <div for="car_region" id="label_carregion" class="form_title">지역</div>
+            <input class="form-control" id="car_region">
+        </div>
+        <div class="form-group">
+            <div for="car_temp_select" class="form_title">임판여부</div>
+            <select class="custom-select" id="car_temp_select" aria-label="Example select with button addon">
+                <option selected>--선택하세요--</option>
+                <option value="Y">Y</option>
+                <option value="N">N</option>
+            </select>
+        </div>
+        <div class="form-group">
+            <div for="car_temp_number" id="label_carregion" class="form_title">임시번호</div>
+            <input class="form-control" id="car_temp_number">
+        </div>
+        <div class="form-group">
+            <div for="temp_number_start" id="temp_number_start" class="form_title">시작일</div>
+            <input class="form-control" id="temp_number_start">
+        </div>
+        <div class="form-group">
+            <div for="temp_number_end" id="label_carregion" class="form_title">종료일</div>
+            <input class="form-control" id="temp_number_end">
+        </div>
+        <div class="form-group">
+            <div for="car_commnet" id="label_carcomment" class="form_title">특이사항</div>
+            <input class="form-control" id="car_commnet">
+        </div>
+
+        <div class="form-group">
+            <button id="button_posting" type="button" style="background-color:#00285E; opacity: 0.8; color:white;"
+                    onclick="data_upload()">입력하기
+            </button>
+        </div>
+    </form>
+</div>
+<div id="table_wrapper">
+    <table id="table_list">
+        <thead class="table_body">
+        <tr class="table_body">
+            <th scope="col">NO</th>
+            <th scope="col">관리번호</th>
+            <th scope="col">차종</th>
+            <th scope="col">구분</th>
+            <th scope="col">위치</th>
+            <th scope="col">최근사용자</th>
+            <th scope="col">임시번호</th>
+        </tr>
+        </thead>
+        <tbody id="list-box">
+
+
+        </tbody>
+    </table>
+</div>
+<div class="bottom_section">
+    <a href="/location"><img width="80px;" height="100px;" id="bottom_left" src="../static/register/bottom_left.png"
+                             align="left"></a>
+    <a href="/register"><img width="80px;" height="100px;" id="bottom_middle" src="../static/register/bottom_middle.png"
+                             align="center"></a>
+    <a href="/list/{{ user_info.username }}"><img width="80px;" height="100px;" id="bottom_right"
+                                                  src="../static/register/bottom_right.png"
+                                                  align="right"></a>
+</div>
+
+{# modal#}
+<div class="modal" id="modal-post1">
+    <div class="modal-background" onclick='$("#modal-post1").removeClass("is-active")'></div>
+    <div class="modal-content">
+        <div class="field">
+            <label class="label">차종</label>
+            <div class="control">
+                <input id="list_name" class="input is-info is-small" type="text">
+            </div>
+        </div>
+        <div class="field">
+            <label class="label">관리번호</label>
+            <div class="control">
+                <input id="list_number" class="input is-info is-small" type="text">
+            </div>
+        </div>
+        <div class="field">
+            <label class="label">담당자</label>
+            <div class="control">
+                <input id="list_car_admin" class="input is-info is-small" type="text">
+            </div>
+        </div>
+        <div class="field">
+            <label class="label">지역</label>
+            <div class="control">
+                <input id="list_car_region" class="input is-info is-small" type="text">
+            </div>
+        </div>
+        <div class="field">
+            <label class="label">임판여부</label>
+            <div class="control">
+                <input id="list_car_temp_select" class="input is-info is-small" type="text">
+            </div>
+        </div>
+        <div class="field">
+            <label class="label">임시번호</label>
+            <div class="control">
+                <input id="list_car_temp_number" class="input is-info is-small" type="text">
+            </div>
+        </div>
+        <div class="field">
+            <label class="label">임판시작일</label>
+            <div class="control">
+                <input id="list_temp_number_start" class="input is-info is-small" type="text">
+            </div>
+        </div>
+        <div class="field">
+            <label class="label">임판종료일</label>
+            <div class="control">
+                <input id="list_temp_number_end" class="input is-info is-small" type="text">
+            </div>
+        </div>
+        {#        <div class="field">#}
+        {#            <label class="label">상세정보</label>#}
+        {#            <div class="control">#}
+        {#                <input id="list_specific_caruse" class="input is-info is-small" type="text">#}
+        {#            </div>#}
+        {#        </div>#}
+        <div class="field">
+            <label class="label">comment</label>
+            <div class="control">
+                <input id="list_comment" class="input is-info is-small" type="text">
+            </div>
+        </div>
+        <nav class="level is-mobile">
+            <div class="level-left">
+                <div class="level-item">
+                    <a class="button is-info" onclick="modal_update()">수정하기</a>
+                </div>
+                <div class="level-item">
+                    <a class="button is-danger" onclick="modal_delete()">삭제하기</a>
+                </div>
+                <div class="level-item">
+                    <a class="button is-info"
+                       onclick='$("#modal-post1").removeClass("is-active")'>취소</a>
+                </div>
+            </div>
+        </nav>
+    </div>
+
+    <button class="modal-close is-large" aria-label="close"
+            onclick='$("#modal-post1").removeClass("is-active")'></button>
+</div>
+
+
+</body>
+</html>
